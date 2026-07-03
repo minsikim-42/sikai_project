@@ -1,27 +1,41 @@
-/* 전체 기본 */
+/* ===== 기본 ===== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR";
-    background-color: #343541;
+    height: 100%;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Noto Sans KR",
+        sans-serif;
+    background: #343541;
     color: #ececf1;
 }
 
-/* 전체 컨테이너 */
+/* ===== 레이아웃 ===== */
+
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
 }
 
-/* 헤더 */
 .header {
-    padding: 14px 20px;
-    font-weight: bold;
-    background-color: #202123;
+    flex-shrink: 0;
+    padding: 16px 20px;
+    background: #202123;
     border-bottom: 1px solid #444;
+    font-weight: 600;
+    font-size: 40px;
 }
 
-/* 채팅 박스 */
 .chat-box {
     flex: 1;
     overflow-y: auto;
@@ -31,86 +45,221 @@ body {
     gap: 12px;
 }
 
-/* 메시지 기본 */
+/* ===== 메시지 ===== */
+
 .message {
-    max-width: 70%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    line-height: 1.4;
-    white-space: pre-wrap;
+    max-width: min(800px, 85%);
+    border-radius: 14px;
+    padding: 20px;
+    font-size: 40px;
+    line-height: 1.5;
     word-break: break-word;
+    white-space: pre-wrap;
 }
 
-/* AI 메시지 (왼쪽) */
 .message.ai {
-    background-color: #444654;
     align-self: flex-start;
+    background: #444654;
 }
 
-/* 유저 메시지 (오른쪽) */
 .message.user {
-    background-color: #2b2c2f;
     align-self: flex-end;
+    background: #2b2c2f;
 }
 
-/* 입력 영역 */
-.input-area {
-    display: flex;
-    padding: 12px;
-    background-color: #40414f;
-    border-top: 1px solid #2a2b32;
-}
-
-/* 입력창 */
-.input-area input {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    outline: none;
-    background-color: #343541;
-    color: #ececf1;
-}
-
-/* 버튼 */
-.input-area button {
-    margin-left: 10px;
-    padding: 0 16px;
-    border: none;
-    border-radius: 8px;
-    background-color: #19c37d;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.input-area button:hover {
-    background-color: #15a86c;
-}
+/* ===== Thinking ===== */
 
 .thinking-box {
     margin-bottom: 10px;
-    border: 1px solid #555;
+    border: 1px solid #5a5a5a;
     border-radius: 8px;
     background: #2f3136;
+    overflow: hidden;
 }
 
 .thinking-box summary {
     cursor: pointer;
     padding: 8px 12px;
-    font-weight: bold;
+    list-style: none;
+    font-size: 30px;
+    font-weight: 600;
     color: #ffd54f;
+    user-select: none;
+}
+
+.thinking-box summary::-webkit-details-marker {
+    display: none;
+}
+
+.thinking-box summary::before {
+    content: "▶ ";
+}
+
+.thinking-box[open] summary::before {
+    content: "▼ ";
 }
 
 .thinking {
-    margin: 0;
-    padding: 12px;
+    padding: 10px 12px;
+    border-top: 1px solid #444;
     color: #bdbdbd;
+    font-size: 30px;
+    line-height: 1.5;
     white-space: pre-wrap;
-    font-size: 14px;
 }
 
 .content {
-    white-space: pre-wrap;
     line-height: 1.6;
+}
+
+/* ===== 입력 ===== */
+
+.input-area {
+    flex-shrink: 0;
+    display: flex;
+    gap: 10px;
+    padding: 30px;
+    background: #40414f;
+    border-top: 1px solid #2a2b32;
+}
+
+.input-area input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 20px;
+    background: #343541;
+    color: #ececf1;
+    font-size: 40px;
+    select {
+        font-size: 40px;
+    }
+}
+
+.input-area button {
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    background: #19c37d;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.input-area button:hover {
+    background: #15a86c;
+}
+
+/* ===== 모델 선택 ===== */
+
+select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #2f3136;
+    color: #ececf1;
+    font-size: 40px;
+}
+
+/* ===== 스크롤바 ===== */
+
+.chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.settings-area {
+    display: flex;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #2d2f39;
+    border-bottom: 1px solid #444;
+}
+
+.setting-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.setting-item label {
+    font-size: 13px;
+    color: #bdbdbd;
+}
+
+.setting-item select {
+    width: 100%;
+    height: 42px;
+
+    padding: 0 12px;
+
+    border-radius: 8px;
+    border: 1px solid #555;
+
+    background: #40414f;
+    color: white;
+
+    font-size: 15px;
+}
+
+/* ===== 모바일 ===== */
+
+@media (max-width: 768px) {
+
+    body {
+        font-size: 16px;
+    }
+
+    .header {
+        font-size: 18px;
+        padding: 16px;
+    }
+
+    .chat-box {
+        padding: 12px;
+    }
+
+    .message {
+        max-width: 95%;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .thinking {
+        font-size: 15px;
+    }
+
+    .thinking-box summary {
+        font-size: 15px;
+    }
+
+    .input-area {
+        padding: 10px;
+    }
+
+    .input-area input {
+        font-size: 16px;
+        padding: 14px;
+    }
+
+    .input-area button {
+        font-size: 16px;
+        min-width: 60px;
+    }
+
+    select {
+        font-size: 16px;
+    }
 }

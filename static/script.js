@@ -44,6 +44,7 @@ async function sendMessage() {
     try {
 
         const model = document.getElementById("modelSelect").value;
+        const context_num = document.getElementById("contextSelect").value;
 
         const response = await fetch("/chat", {
             method: "POST",
@@ -52,7 +53,8 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 message: userText,
-                model: model
+                model: model,
+                context: context_num
             })
         });
 
