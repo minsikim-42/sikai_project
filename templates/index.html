@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -23,31 +25,34 @@
 
     <!-- 입력 영역 -->
     <div class="input-area">
-        <input id="input" />
-        <button onclick="sendMessage()">➤</button>
-
+        <input
+            id="input"
+            type="text"
+            placeholder="메시지를 입력해주세요..."
+        >
+        <button id="sendButton" onclick="sendMessage()">➤</button>
     </div>
 
     <div class="settings-area">
         <div class="setting-item">
             <label for="modelSelect">Model</label>
             <select id="modelSelect">
-                <option value="qwen3:0.6b" selected>qwen3:0.6b(장난감) (default)</option>
+                <option value="qwen3:0.6b" selected>qwen3:0.6b(장난감, 개빠름) (default)</option>
                 <option value="qwen3:8b">qwen3:8b</option>
                 <option value="qwen3:14b">qwen3:14b(말이 좀 되기시작)</option>
-                <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx(잘함)</option>
+                <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx(잘함, 빠름)</option>
                 <option value="test_error">test_error</option>
             </select>
         </div>
 
         <div class="setting-item">
-            <label for="contextSelect">Context</label>
-            <select id="contextSelect">
-                <option value="1024">1K</option>
-                <option value="2048" selected>2K</option>
-                <option value="8192">8K</option>
-                <option value="32768">32K</option>
-                <option value="65536">64K (느림)</option>
+            <label for="num_predict">Context</label>
+            <select id="num_predict">
+                <option value=128>128</option>
+                <option value=256 selected>256(짧은 QA)</option>
+                <option value=512>512일반</option>
+                <option value=1024>1k(긴설명/코드)</option>
+                <option value=2048>2k(긴코드/문서)</option>
             </select>
         </div>
 

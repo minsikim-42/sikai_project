@@ -5,7 +5,7 @@ from models import ChatRequest
 
 def chat(request: ChatRequest):
     message = request.message
-    context_num = request.context or 2048
+    predict = request.predict or 2048
     model = request.model or "qwen3:0.6b"
 
     print(f"request: {request}")
@@ -28,7 +28,7 @@ def chat(request: ChatRequest):
                     ],
                     "stream": True,
                     "options": {
-                        "num_predict": context_num,
+                        "num_predict": predict,
                         "temperature": 0.7,
                         "top_p": 0.9,
                     }

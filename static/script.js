@@ -1,3 +1,4 @@
+let isGenerating = false;
 
 // 채팅 박스 가져오기
 const chatBox = document.getElementById("chatBox");
@@ -17,11 +18,20 @@ function addMessage(role, text) {
 
 // 유저 메시지 전송
 async function sendMessage() {
+    if (isGenerating) return; // 생성 중이면 무시
 
     const userText = input.value.trim();
     if (!userText) return;
 
+    isGenerating = true;
+    input.disabled = true;
+    input.placeholder = "AI 답변중..";
+
+    const sendButton = document.getElementById("sendButton");
+    sendButton.disabled = true;
+
     addMessage("user", userText);
+
     input.value = "";
 
     const aiMessage = document.createElement("div");
@@ -44,7 +54,7 @@ async function sendMessage() {
     try {
 
         const model = document.getElementById("modelSelect").value;
-        const context_num = document.getElementById("contextSelect").value;
+        const predict = document.getElementById("num_predict").value;
 
         const response = await fetch("/chat", {
             method: "POST",
@@ -54,7 +64,7 @@ async function sendMessage() {
             body: JSON.stringify({
                 message: userText,
                 model: model,
-                context: context_num
+                predict: predict, // 토큰 수 제한
             })
         });
 
@@ -62,6 +72,7 @@ async function sendMessage() {
         const decoder = new TextDecoder();
 
         let buffer = "";
+        let contentText = "";
 
         while (true) {
 
@@ -83,16 +94,27 @@ async function sendMessage() {
                 if (chunk.thinking)
                     thinkingDiv.textContent += chunk.thinking;
 
-                if (chunk.content)
-                    contentDiv.textContent += chunk.content;
+                if (chunk.content) {
+                    contentText += chunk.content;
+                    contentDiv.innerHTML = marked.parse(contentText);                }
             }
 
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
+        isGenerating = false;
+        input.disabled = false;
+        sendButton.disabled = false;
+        input.placeholder = "메시지를 입력해주세요...";
+        // input.focus();
     } catch (error) {
 
         aiMessage.textContent = "서버 연결 실패: " + error.message;
+
+        isGenerating = false;
+        input.disabled = false;
+        sendButton.disabled = false;
+        input.placeholder = "메시지를 입력해주세요...";
+        // input.focus();
     }
 }
 
