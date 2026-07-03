@@ -51,9 +51,13 @@ body {
     max-width: min(800px, 85%);
     border-radius: 14px;
     padding: 20px;
-    font-size: 40px;
+    font-size: 20px;
     line-height: 1.5;
     word-break: break-word;
+}
+
+.thinking,
+.content {
     white-space: pre-wrap;
 }
 
@@ -105,7 +109,7 @@ body {
     color: #bdbdbd;
     font-size: 30px;
     line-height: 1.5;
-    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .content {

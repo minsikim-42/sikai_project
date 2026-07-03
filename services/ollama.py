@@ -53,8 +53,6 @@ def chat(request: ChatRequest):
 
         message = data.get("message", {})
 
-        print("yield", message.get("thinking"), message.get("content"))
-
         yield json.dumps({
             "thinking": message.get("thinking", ""),
             "content": message.get("content", "")
