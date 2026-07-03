@@ -30,6 +30,7 @@ def chat(request: ChatRequest):
                     "think": isThink,
                     "stream": True,
                     "options": {
+                        "num_ctx": 32768, # 32k
                         "num_predict": predict,
                         "temperature": 0.7,
                         "top_p": 0.9,

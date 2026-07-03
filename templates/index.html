@@ -28,21 +28,22 @@
     <div class="setting-item">
         <label>🤖 Model</label>
         <select id="modelSelect">
-            <option value="qwen3:0.6b" selected>qwen3:0.6b (기본)</option>
+            <option value="qwen3:0.6b" selected>qwen3:0.6b(장난감,개빠름)</option>
             <option value="qwen3:8b">qwen3:8b</option>
-            <option value="qwen3:14b">qwen3:14b</option>
-            <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx</option>
+            <option value="qwen3:14b">qwen3:14b(말이좀통하는듯)</option>
+            <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx(좋음,빠름)</option>
         </select>
     </div>
 
     <div class="setting-item">
         <label>📏 Max Tokens</label>
         <select id="num_predict">
+            <option value="10">10(test)</option>
             <option value="128">128</option>
             <option value="256" selected>256</option>
-            <option value="512">512</option>
-            <option value="1024">1024</option>
-            <option value="2048">2048</option>
+            <option value="512">512(일반)</option>
+            <option value="1024">1024(긴문장/코드)</option>
+            <option value="2048">2048(긴코드/문서)</option>
         </select>
     </div>
 
