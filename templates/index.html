@@ -23,6 +23,37 @@
         <div class="message ai">안녕하세요! 무엇을 도와드릴까요?</div>
     </div>
 
+    <div class="settings-area">
+
+    <div class="setting-item">
+        <label>🤖 Model</label>
+        <select id="modelSelect">
+            <option value="qwen3:0.6b" selected>qwen3:0.6b (기본)</option>
+            <option value="qwen3:8b">qwen3:8b</option>
+            <option value="qwen3:14b">qwen3:14b</option>
+            <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx</option>
+        </select>
+    </div>
+
+    <div class="setting-item">
+        <label>📏 Max Tokens</label>
+        <select id="num_predict">
+            <option value="128">128</option>
+            <option value="256" selected>256</option>
+            <option value="512">512</option>
+            <option value="1024">1024</option>
+            <option value="2048">2048</option>
+        </select>
+    </div>
+
+    <label class="switch">
+        <input type="checkbox" id="thinkCheck" checked>
+        <span class="slider"></span>
+        <span class="switch-text">Thinking</span>
+    </label>
+
+</div>
+
     <!-- 입력 영역 -->
     <div class="input-area">
         <input
@@ -33,30 +64,7 @@
         <button id="sendButton" onclick="sendMessage()">➤</button>
     </div>
 
-    <div class="settings-area">
-        <div class="setting-item">
-            <label for="modelSelect">Model</label>
-            <select id="modelSelect">
-                <option value="qwen3:0.6b" selected>qwen3:0.6b(장난감, 개빠름) (default)</option>
-                <option value="qwen3:8b">qwen3:8b</option>
-                <option value="qwen3:14b">qwen3:14b(말이 좀 되기시작)</option>
-                <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx(잘함, 빠름)</option>
-                <option value="test_error">test_error</option>
-            </select>
-        </div>
-
-        <div class="setting-item">
-            <label for="num_predict">Context</label>
-            <select id="num_predict">
-                <option value=128>128</option>
-                <option value=256 selected>256(짧은 QA)</option>
-                <option value=512>512일반</option>
-                <option value=1024>1k(긴설명/코드)</option>
-                <option value=2048>2k(긴코드/문서)</option>
-            </select>
-        </div>
-
-    </div>
+    
 
 </div>
 

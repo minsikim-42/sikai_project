@@ -51,10 +51,11 @@ async function sendMessage() {
     const thinkingDiv = aiMessage.querySelector(".thinking");
     const contentDiv = aiMessage.querySelector(".content");
 
+    // chat POST 요청
     try {
-
         const model = document.getElementById("modelSelect").value;
         const predict = document.getElementById("num_predict").value;
+        const thinkCheck = document.getElementById("thinkCheck").checked;
 
         const response = await fetch("/chat", {
             method: "POST",
@@ -65,6 +66,7 @@ async function sendMessage() {
                 message: userText,
                 model: model,
                 predict: predict, // 토큰 수 제한
+                isThink: thinkCheck,
             })
         });
 

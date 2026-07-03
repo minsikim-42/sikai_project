@@ -6,6 +6,7 @@ from models import ChatRequest
 def chat(request: ChatRequest):
     message = request.message
     predict = request.predict or 2048
+    isThink = True if request.isThink is None else request.isThink
     model = request.model or "qwen3:0.6b"
 
     print(f"request: {request}")
@@ -26,6 +27,7 @@ def chat(request: ChatRequest):
                             "content": message
                         }
                     ],
+                    "think": isThink,
                     "stream": True,
                     "options": {
                         "num_predict": predict,
@@ -57,3 +59,5 @@ def chat(request: ChatRequest):
             "thinking": message.get("thinking", ""),
             "content": message.get("content", "")
         }) + "\n"
+    
+    print(data["done_reason"])
