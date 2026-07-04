@@ -1,0 +1,77 @@
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>My AI Server</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 헤더 -->
+    <div class="header">
+        🤖 My AI Server
+    </div>
+
+    <!-- 채팅 영역 -->
+    <div id="chatBox" class="chat-box">
+        <div class="message ai">안녕하세요! 무엇을 도와드릴까요?</div>
+    </div>
+
+    <div class="settings-area">
+
+    <div class="setting-item">
+        <label>🤖 Model</label>
+        <select id="modelSelect">
+            <option value="qwen3:0.6b" selected>qwen3:0.6b(장난감,개빠름)</option>
+            <option value="qwen3:8b">qwen3:8b</option>
+            <option value="qwen3:14b">qwen3:14b(말이좀통하는듯)</option>
+            <option value="qwen3.6:35b-mlx">qwen3.6:35b-mlx(좋음,빠름)</option>
+        </select>
+    </div>
+
+    <div class="setting-item">
+        <label>📏 Max Tokens</label>
+        <select id="num_predict">
+            <option value="10">10(test)</option>
+            <option value="128">128</option>
+            <option value="256" selected>256</option>
+            <option value="512">512(일반)</option>
+            <option value="1024">1k(긴문장/코드)</option>
+            <option value="2048">2k(긴코드/문서)</option>
+            <option value="4096">4k(3.6+think시에)</option>
+            <option value="8192">8k(그래도 부족하면..)</option>
+        </select>
+    </div>
+
+    <label class="switch">
+        <input type="checkbox" id="thinkCheck" checked>
+        <span class="slider"></span>
+        <span class="switch-text">Thinking</span>
+    </label>
+
+</div>
+
+    <!-- 입력 영역 -->
+    <div class="input-area">
+        <input
+            id="input"
+            type="text"
+            placeholder="메시지를 입력해주세요..."
+        >
+        <button id="sendButton" onclick="sendMessage()">➤</button>
+    </div>
+
+    
+
+</div>
+
+<script src="/static/script.js"></script>
+
+</body>
+</html>

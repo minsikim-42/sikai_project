@@ -3,30 +3,31 @@ import requests
 from config import OLLAMA_URL
 from models import ChatRequest
 
-def chat(request: ChatRequest):
-    message = request.message
+def chat(messages: list, request: ChatRequest):
+    print(f"request: {request}")
+    
+    message = messages
     predict = request.predict or 2048
     isThink = True if request.isThink is None else request.isThink
     model = request.model or "qwen3:0.6b"
 
-    print(f"request: {request}")
-
     MODEL = model #GetModel(model)
-    instruction = "한글을 기본언어로 한다. 짧게 대답한다."
+    
     response = requests.post(
                 f"{OLLAMA_URL}/api/chat",
                 json={
                     "model": MODEL,
-                    "messages": [
-                        {
-                            "role": "system",
-                            "content": instruction
-                        },
-                        {
-                            "role": "user",
-                            "content": message
-                        }
-                    ],
+                    "messages": messages,
+                    # [
+                    #     {
+                    #         "role": "system",
+                    #         "content": instruction
+                    #     },
+                    #     {
+                    #         "role": "user",
+                    #         "content": messages
+                    #     }
+                    # ],
                     "think": isThink,
                     "stream": True,
                     "options": {

@@ -1,3 +1,5 @@
+let currentConversationId = 1;
+
 let isGenerating = false;
 
 // 채팅 박스 가져오기
@@ -60,9 +62,10 @@ async function sendMessage() {
         const response = await fetch("/chat", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
+                conversation_id: currentConversationId,
                 message: userText,
                 model: model,
                 predict: predict, // 토큰 수 제한
@@ -133,13 +136,10 @@ input.addEventListener("compositionend", () => {
 });
 
 // Enter 처리
-input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
+input.addEventListener("keyup", function (e) {
+    if (e.key !== "Enter") return;
+    if (isComposing) return;
 
-        // ⭐ 중요: 조합 중이면 무시
-        if (isComposing) return;
-
-        e.preventDefault(); // 기본 엔터 방지
-        sendMessage();
-    }
+    e.preventDefault();
+    sendMessage();
 });
