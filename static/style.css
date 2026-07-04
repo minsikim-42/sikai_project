@@ -28,12 +28,58 @@ body {
 }
 
 .header {
+    font-family: "Orbitron", "Pretendard", sans-serif;
+    letter-spacing: 1.5px;
+
     flex-shrink: 0;
-    padding: 16px 20px;
-    background: #202123;
+    padding: 18px 24px;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+
+    color: #eaeaea;
+    background: #0f1115;
+
+    border-bottom: 1px solid rgba(124, 92, 255, 0.3);
+
+    box-shadow:
+        0 0 20px rgba(124, 92, 255, 0.15),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+
+    position: relative;
+}
+
+/* 네온 라인 */
+.header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    height: 2px;
+    width: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #7c5cff,
+        #00d4ff,
+        transparent
+    );
+
+    opacity: 0.8;
+}
+
+.sheader {
+    font-family: "Orbitron", "Pretendard", sans-serif;
+    letter-spacing: 1.5px;
+    
+    flex-shrink: 0;
+    padding: 12px 5px;
+    background: #80480b;
     border-bottom: 1px solid #444;
     font-weight: 600;
-    font-size: 40px;
+    font-size: 25px;
 }
 
 .chat-box {
