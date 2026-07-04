@@ -98,7 +98,7 @@ def chat(
     ]
 
     # 3) system prompt
-    instruction = "한글을 기본으로 하고 짧게 답변한다."
+    instruction = "Answer briefly."
 
     # 4) messages 구성 (핵심)
     messages = [
