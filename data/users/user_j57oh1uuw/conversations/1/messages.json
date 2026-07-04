@@ -1,0 +1,11 @@
+[
+    {
+        "role": "user",
+        "content": "Hihi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hello! How can I assist you today? 😊 If you have any questions or need help, feel free to ask!",
+        "thinking": "Okay, the user said \"Hihi /think\". First, I need to acknowledge their message. Since they're using a slash in their message, it's likely they're testing the system or testing the chatbot's response. I should respond in a friendly and open manner.\n\nI should check if there's any specific request or topic they want to discuss. Since they might just be testing, I can respond in a general way, maybe ask if they have a question or need help. It's good to be welcoming and encourage further interaction.\n\nI need to make sure my response is concise and friendly. Avoid any technical jargon and keep the tone approachable. Let them know I'm here to help if they need anything. That should cover it.\n"
+    }
+]

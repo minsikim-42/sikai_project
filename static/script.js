@@ -1,3 +1,24 @@
+function getUserId() {
+    let userId = localStorage.getItem("my_ai_user_id");
+    if (!userId) {
+        // ID가 없으면 'user_' 뒤에 랜덤 9자리 문자열 생성
+        userId = "user_" + Math.random().toString(36).substring(2, 11);
+        localStorage.setItem("my_ai_user_id", userId);
+    }
+    return userId;
+}
+
+const USER_ID = getUserId();
+console.log("현재 접속한 유저 ID:", USER_ID);
+
+// 💡 공통 헤더 생성 함수
+function getAuthHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "X-User-Id": USER_ID  // 백엔드로 유저 ID 전달!
+    };
+}
+
 let currentConversationId = 1;
 
 let isGenerating = false;
@@ -61,9 +82,7 @@ async function sendMessage() {
 
         const response = await fetch("/chat", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify({
                 conversation_id: currentConversationId,
                 message: userText,
@@ -153,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 특정 대화의 내역을 서버에서 가져와 화면에 그리는 함수
 async function loadChatHistory(conversation_id) {
     try {
-        const response = await fetch(`/chat/${conversation_id}/messages`);
+        const response = await fetch(`/chat/${conversation_id}/messages`, {headers: getAuthHeaders()});
         const data = await response.json();
         
         // 메시지들을 순회하며 화면에 추가
@@ -197,7 +216,7 @@ async function loadModels() {
     // const DEFAULT_MODEL = "qwen3:0.6b";
 
     // try {
-    //     const response = await fetch("/api/models");
+    //     const response = await fetch("/api/models", {headers: getAuthHeaders()});
     //     const data = await response.json();
 
     //     // 기존 하드코딩된 옵션 초기화
