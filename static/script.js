@@ -144,9 +144,10 @@ input.addEventListener("keyup", function (e) {
     sendMessage();
 });
 
-// 페이지 로드 시 1번 대화 내역 불러오기
+// 페이지 로드 시 불러오기
 document.addEventListener("DOMContentLoaded", () => {
-    loadChatHistory(currentConversationId);
+    loadModels(); // 모델 불러오기
+    loadChatHistory(currentConversationId); // 대화내역
 });
 
 // 특정 대화의 내역을 서버에서 가져와 화면에 그리는 함수
@@ -187,5 +188,40 @@ async function loadChatHistory(conversation_id) {
 
     } catch (error) {
         console.error("대화 내역을 불러오는 중 오류 발생:", error);
+    }
+}
+
+async function loadModels() {
+    const modelSelect = document.getElementById("modelSelect");
+    if (!modelSelect) return;
+    const DEFAULT_MODEL = "qwen3:0.6b";
+
+    try {
+        const response = await fetch("/api/models");
+        const data = await response.json();
+
+        // 기존 하드코딩된 옵션 초기화
+        modelSelect.innerHTML = "";
+
+        if (data.models && data.models.length > 0) {
+            data.models.forEach(modelName => {
+                const option = document.createElement("option");
+                option.value = modelName;
+                option.textContent = modelName;
+                modelSelect.appendChild(option);
+            });
+            if (data.models.includes(DEFAULT_MODEL)) {
+                modelSelect.value = DEFAULT_MODEL;  // 디폴트 모델을 기본으로 선택!
+            } else {
+                modelSelect.value = data.models[0]; // 없으면 목록의 첫 번째 모델 선택
+            }
+            console.log("모델 목록 로드 완료:", data.models);
+        } else {
+            // 설치된 모델이 없을 경우 안내
+            modelSelect.innerHTML = `<option value="">설치된 모델 없음</option>`;
+        }
+    } catch (error) {
+        console.error("모델 목록 불러오기 실패:", error);
+        modelSelect.innerHTML = `<option value="qwen3:0.6b">기본 모델 (연결 실패)</option>`;
     }
 }

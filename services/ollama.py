@@ -63,3 +63,16 @@ def chat(messages: list, request: ChatRequest):
         }) + "\n"
     
     print(data["done_reason"])
+
+
+def get_models():
+    try:
+        response = requests.get(f"{OLLAMA_URL}/api/tags")
+        if response.status_code == 200:
+            data = response.json()
+            # 모델 목록에서 'name' 필드만 추출하여 리스트로 반환
+            return [model["name"] for model in data.get("models", [])]
+        return []
+    except Exception as e:
+        print(f"Ollama 모델 목록 조회 실패: {e}")
+        return []

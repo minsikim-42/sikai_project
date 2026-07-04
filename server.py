@@ -114,3 +114,8 @@ def get_conversation_messages(conversation_id: int, request: Request):
     messages = conversation.get_messages(conversation_id)
     print(messages)
     return {"messages": messages}
+
+@app.get("/api/models")
+def list_models(request: Request, _: None = Depends(verify_api_key)):
+    models = ollama.get_models()
+    return {"models": models}
