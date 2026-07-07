@@ -16,6 +16,7 @@ from services import conversation
 import json
 
 from fastapi import Header
+from services import tool_manager, tool_planner
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -79,8 +80,44 @@ def chat(
     x_user_id: str = Header("default_user"),
     _: None = Depends(verify_api_key)
 ):
-    conversation.ensure_conversation(x_user_id, request.conversation_id)
+    plan = tool_planner.plan(request.message)
+    tool_result = None
+    if plan["use_tool"]:
+        tool_result = tool_manager.run(
+            plan["tool"],
+            plan["argument"]
+        )
 
+    if tool_result is not None:
+        conversation.ensure_conversation(
+            x_user_id,
+            request.conversation_id
+        )
+        conversation.add_message(
+            x_user_id,
+            request.conversation_id,
+            "user",
+            request.message
+        )
+        # Tool 결과를 assistant처럼 저장
+        conversation.add_message(
+            x_user_id,
+            request.conversation_id,
+            "assistant",
+            tool_result["content"]
+        )
+
+        return StreamingResponse(
+            iter([
+                json.dumps({
+                    "thinking": "",
+                    "content": tool_result["content"]
+                }) + "\n"
+            ]),
+            media_type="text/plain"
+        )
+    
+    conversation.ensure_conversation(x_user_id, request.conversation_id)
     conversation.add_message(
         x_user_id,
         request.conversation_id,
