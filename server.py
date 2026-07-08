@@ -185,27 +185,20 @@ def list_models(request: Request, _: None = Depends(verify_api_key)):
     models = ollama.get_models()
     return {"models": models}
 
-@app.get("/api/conversations")
+@app.get("/api/conversations") # 대화 내역들 불러오기
 def list_conversations(x_user_id: str = Header("default_user")):
     return {"conversations": conversation.get_conversation_list(x_user_id)}
 
-@app.post("/api/conversations")
-def new_conversation(x_user_id: str = Header("default_user")):
-    new_id = conversation.create_conversation(x_user_id)
-    return {"id": new_id}
 
 # 세션관리
-next_conversation_id = 1
 
 @app.post("/conversation/new")
 def new_conversation(x_user_id: str = Header("default_user")):
     print("new chat requests")
     
-    new_id = conversation.create_conversation(x_user_id)
+    info = conversation.create_conversation(x_user_id)
 
-    return {
-        "conversation_id": new_id
-    }
+    return info
 
 @app.get("/conversation/{conversation_id}")
 def get_conversation(

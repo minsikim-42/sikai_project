@@ -29,7 +29,7 @@ def create_conversation(user_id: str):
     
     info = {
         "id": conversation_id,
-        "title": "새 대화",
+        "title": f"대화 {conversation_id}",
         "created_at": datetime.now().isoformat()
     }
     messages = []
@@ -39,7 +39,7 @@ def create_conversation(user_id: str):
     with open(f"{path}/messages.json", "w", encoding="utf-8") as f:
         json.dump(messages, f)
     
-    return conversation_id
+    return info
 
 # def ensure_conversation(user_id: str, conversation_id):
 #     user_path = get_user_path(user_id)

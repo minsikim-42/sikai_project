@@ -8,6 +8,7 @@ html,
 body {
     margin: 0;
     height: 100%;
+    overflow:hidden;
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -18,6 +19,8 @@ body {
     background: #343541;
     color: #ececf1;
     height:100dvh;
+    display:flex;
+    flex-direction:column; /* .layout - height:calc(100dvh - 85px);대신 */
 }
 
 /* ===== 레이아웃 ===== */
@@ -25,17 +28,21 @@ body {
 .container{
     display:flex;
     flex-direction:column;
-    flex:1;
     height:100%;
+    min-height:0;
 }
 .layout{
     display:flex;
-    height:calc(100dvh - 85px);;
+    flex:1;
+    min-height:0;
+    /* height:calc(100dvh - 85px);; */
 }
 
 .content{
     flex:1;
+    min-height:0;
     display:flex;
+    flex-direction:column;
 }
 
 .header {
@@ -101,6 +108,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height:0;
 }
 
 /* ===== 메시지 ===== */
@@ -376,5 +384,183 @@ select {
 #new-chat{
     position: relative;
     z-index: 20;
-    font-size: 30px;
+
+    width:100%;
+    height:48px;
+
+    margin-bottom:20px;
+
+    border:1px solid rgba(0,212,255,0.5);
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,212,255,0.15),
+            rgba(124,92,255,0.15)
+        );
+
+    color:#eafaff;
+
+    font-size:20px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    letter-spacing:1px;
+
+    box-shadow:
+        0 0 10px rgba(0,212,255,0.2),
+        inset 0 0 10px rgba(124,92,255,0.1);
+
+    transition:
+        0.2s ease;
+
+    backdrop-filter: blur(10px);
+}
+
+
+#new-chat:hover{
+
+    transform:translateY(-2px);
+
+    border-color:#00d4ff;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,212,255,0.3),
+            rgba(124,92,255,0.3)
+        );
+
+    box-shadow:
+        0 0 20px rgba(0,212,255,0.5),
+        0 0 40px rgba(124,92,255,0.3);
+}
+
+
+#new-chat:active{
+
+    transform:translateY(1px);
+
+    box-shadow:
+        0 0 8px rgba(0,212,255,0.4);
+}
+
+/* ===== 대화 목록 ===== */
+
+.history{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
+    overflow-y:auto;
+    flex:1;
+}
+
+
+.history-item{
+    position:relative;
+
+    padding:14px 16px;
+
+    border-radius:10px;
+
+    background:
+        rgba(255,255,255,0.03);
+
+    border:1px solid transparent;
+
+    color:#cfd3dc;
+
+    font-size:18px;
+    font-weight:500;
+
+    cursor:pointer;
+
+    transition:
+        0.2s ease;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+
+/* 왼쪽 포인트 라인 */
+.history-item::before{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:3px;
+    height:100%;
+
+    background:transparent;
+
+    transition:.2s;
+}
+
+
+/* hover */
+.history-item:hover{
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,212,255,0.12),
+            rgba(124,92,255,0.12)
+        );
+
+    border-color:
+        rgba(0,212,255,0.35);
+
+    color:white;
+
+    transform:translateX(3px);
+
+    box-shadow:
+        0 0 15px rgba(0,212,255,0.15);
+}
+
+
+.history-item:hover::before{
+
+    background:#00d4ff;
+
+    box-shadow:
+        0 0 10px #00d4ff;
+}
+
+
+/* 현재 선택된 채팅 */
+.history-item.active{
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,92,255,0.25),
+            rgba(0,212,255,0.15)
+        );
+
+    border-color:
+        rgba(124,92,255,0.5);
+
+    color:white;
+
+    box-shadow:
+        0 0 15px rgba(124,92,255,0.2);
+}
+
+
+.history-item.active::before{
+
+    background:#7c5cff;
+
+    box-shadow:
+        0 0 10px #7c5cff;
 }

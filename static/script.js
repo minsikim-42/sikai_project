@@ -233,14 +233,19 @@ async function newChat(){
 
         console.log("data:", data);
 
-        currentConversationId = data.conversation_id;
+        // info = {
+        //     "id": conversation_id,
+        //     "title": f"대화 {conversation_id}",
+        //     "created_at": datetime.now().isoformat()
+        // }
+        currentConversationId = data.id;
 
         // localStorage.setItem(
         //     "current_conversation_id",
         //     currentConversationId
         // );
 
-        addHistory(currentConversationId);
+        addHistory(currentConversationId, data.title);
 
         chatBox.innerHTML =
             '<div class="message ai">안녕하세요! 무엇을 도와드릴까요?</div>';
@@ -252,7 +257,7 @@ async function newChat(){
 
     }
 }
-function addHistory(id){
+function addHistory(id, title="-"){
 
     const history = document.querySelector(".history");
 
@@ -260,11 +265,20 @@ function addHistory(id){
 
     item.className = "history-item";
 
-    item.textContent = "새로운 대화" + id;
+    item.textContent = title;
 
     item.dataset.id = id;
 
     item.onclick = () => {
+
+        document
+            .querySelectorAll(".history-item")
+            .forEach(e => e.classList.remove("active"));
+
+        item.classList.add("active");
+
+        currentConversationId = id;
+
         loadChatHistory(id);
     };
 
