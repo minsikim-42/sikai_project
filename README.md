@@ -1,19 +1,20 @@
 ### 1. install uv and ollama
 window
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+`powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
 
 *install ollama in https://ollama.com/download
 
 ### 2. activate uv
 
-uv venv
+`uv venv`
 
-.venv\Scripts\activate
+`.venv\Scripts\activate`
 
 ### 3. install import
-./import_library_win.bat
+`./import_library_win.bat`
 
 ### 4. config.py
+```
 OLLAMA_URL = "http://localhost:11434"
 
 SERVER_MODE = "tailscale"
@@ -25,8 +26,8 @@ API_KEY = ""
 NAVER_CLIENT_ID = ""
 NAVER_CLIENT_SECRET = ""
 SERPER_API_KEY = ""
-
+```
 ### 5. run, ollama serve
-./run_win.bat
+`./run_win.bat`
 
 ollama serve (you need to install model like 'ollama run qwen3:8b' or if you want use downloaded model, using script.js fnc)
