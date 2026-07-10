@@ -18,6 +18,9 @@ import json
 from fastapi import Header
 from services import tool_manager, tool_planner
 
+from services import job_manager
+from threading import Thread
+
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI()
@@ -48,30 +51,75 @@ def chatHome(
         {}
     )
 
-def stream_chat(messages: list, request: ChatRequest, user_id: str):
+def generate_chat(
+    messages,
+    request,
+    user_id,
+    job_id
+):  
     answer = ""
     thinking_process = ""
 
-    for line in ollama.chat(messages, request):
+    def callback(t, c):
+        nonlocal answer, thinking_process
 
-        data = json.loads(line)
+        if t:
+            thinking_process += t
 
-        if data.get("thinking"):
-            thinking_process += data["thinking"]
-        if data.get("content"):
-            answer += data["content"]
+        if c:
+            answer += c
 
-        # 브라우저에는 그대로 전달
-        yield line
+        job_manager.append(
+            job_id,
+            thinking=t,
+            content=c
+        )
 
-    # AI 답변 저장
-    conversation.add_message(
-        user_id,
-        request.conversation_id,
-        "assistant",
-        answer,
-        thinking_process
-    )
+    try:
+        # callback 방식으로 실행
+        for _ in ollama.chat( # ollama.chat is generator
+            messages,
+            request,
+            callback=callback
+        ):
+            pass
+
+        conversation.add_message(
+            user_id,
+            request.conversation_id,
+            "assistant",
+            answer,
+            thinking_process
+        )
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        job_manager.finish(job_id)
+
+    # for line in ollama.chat(messages, request, callback=callback):
+
+    #     data = json.loads(line)
+
+    #     if data.get("thinking"):
+    #         thinking_process += data["thinking"]
+    #     if data.get("content"):
+    #         answer += data["content"]
+
+    #     # 브라우저에는 그대로 전달
+    #     yield line
+    
+    # job_manager.finish(job_id)
+
+    # # AI 답변 저장
+    # conversation.add_message(
+    #     user_id,
+    #     request.conversation_id,
+    #     "assistant",
+    #     answer,
+    #     thinking_process
+    # )
 
 @app.post("/chat")
 # @limiter.limit("10/minute")
@@ -107,15 +155,37 @@ def chat(
             tool_result["content"]
         )
 
-        return StreamingResponse(
-            iter([
-                json.dumps({
-                    "thinking": "",
-                    "content": tool_result["content"]
-                }) + "\n"
-            ]),
-            media_type="text/plain"
+
+        job_id = job_manager.create_job(
+            x_user_id,
+            request.conversation_id
         )
+
+        thread = Thread(
+            target=generate_chat,
+            args=(
+                messages,
+                request,
+                x_user_id,
+                job_id
+            ),
+            daemon=True
+        )
+
+        thread.start()
+
+        return {
+            "job_id": job_id
+        }
+        # return StreamingResponse(
+        #     iter([
+        #         json.dumps({
+        #             "thinking": "",
+        #             "content": tool_result["content"]
+        #         }) + "\n"
+        #     ]),
+        #     media_type="text/plain"
+        # )
     
     conversation.ensure_conversation(x_user_id, request.conversation_id)
     conversation.add_message(
@@ -167,10 +237,30 @@ def chat(
 
     print(f"chat request messages:\n{messages}")
     
-    return StreamingResponse(
-        stream_chat(messages, request, x_user_id),
-        media_type="text/plain"
-	)
+    job_id = job_manager.create_job(
+        x_user_id,
+        request.conversation_id
+    )
+    thread = Thread(
+        target=generate_chat,
+        args=(
+            messages,
+            request,
+            x_user_id,
+            job_id
+        ),
+        daemon=True
+    )
+
+    thread.start()
+
+    return {
+        "job_id": job_id
+    }
+    # return StreamingResponse(
+    #     generate_chat(messages, request, x_user_id),
+    #     media_type="text/plain"
+	# )
 
 @app.get("/chat/{conversation_id}/messages")
 def get_conversation_messages(conversation_id: int, x_user_id: str = Header("default_user")):
@@ -212,3 +302,9 @@ def get_conversation(
     )
 
     return messages
+
+@app.get("/chat/stream/{job_id}")
+def get_job(job_id: str):
+    job = job_manager.get_job(job_id)
+    print(job)
+    return job

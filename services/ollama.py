@@ -4,7 +4,7 @@ from config import OLLAMA_URL
 from models import ChatRequest
 from services import tool_manager
 
-def chat(messages: list, request: ChatRequest):
+def chat(messages: list, request: ChatRequest, callback=None):
     print("=============/chat input messages===============")
     print(json.dumps(messages, indent=2, ensure_ascii=False))
     print(f"request: {request}")
@@ -134,10 +134,17 @@ def chat(messages: list, request: ChatRequest):
         print(json.dumps(data, indent=2, ensure_ascii=False))
         print("====================end======================")
 
-        yield json.dumps({
-            "thinking": message.get("thinking", ""),
-            "content": message.get("content", "")
-        }) + "\n"
+        res_thinking = message.get("thinking","")
+        res_content = message.get("content","")
+        if callback:
+            print(type(res_thinking))
+            print(res_thinking)
+            callback(res_thinking, res_content)
+        else:
+            yield json.dumps({
+                "thinking": res_thinking,
+                "content": res_content
+            }) + "\n"
 
         prompt_tokens += data.get(
             "prompt_eval_count",

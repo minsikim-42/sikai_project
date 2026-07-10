@@ -90,53 +90,70 @@ async function sendMessage() {
             })
         });
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        let buffer = "";
-        let contentText = "";
+        const data = await response.json();
+        const jobId = data.job_id;
 
         while (true) {
 
-            const { done, value } = await reader.read();
+            const res = await fetch(`/chat/stream/${jobId}`);
 
-            if (done) break;
+            const job = await res.json();
 
-            buffer += decoder.decode(value, { stream: true });
-
-            const lines = buffer.split("\n");
-            buffer = lines.pop();
-
-            for (const line of lines) {
-
-                if (!line.trim()) continue;
-
-                const chunk = JSON.parse(line);
-
-                if (chunk.thinking)
-                    thinkingDiv.textContent += chunk.thinking;
-
-                if (chunk.content) {
-                    contentText += chunk.content;
-                    contentDiv.innerHTML = marked.parse(contentText);                }
-            }
+            thinkingDiv.textContent = job.thinking;
+            contentDiv.innerHTML = marked.parse(job.answer);
 
             chatBox.scrollTop = chatBox.scrollHeight;
+
+            if (job.finished)
+                break;
+
+            await new Promise(r => setTimeout(r, 200));
         }
-        isGenerating = false;
-        input.disabled = false;
-        sendButton.disabled = false;
-        input.placeholder = "메시지를 입력해주세요...";
-        // input.focus();
+        // const reader = response.body.getReader();
+        // const decoder = new TextDecoder();
+
+        // let buffer = "";
+        // let contentText = "";
+
+        // while (true) {
+
+        //     const { done, value } = await reader.read();
+
+        //     if (done) break;
+
+        //     buffer += decoder.decode(value, { stream: true });
+
+        //     const lines = buffer.split("\n");
+        //     buffer = lines.pop();
+
+        //     for (const line of lines) {
+
+        //         if (!line.trim()) continue;
+
+        //         const chunk = JSON.parse(line);
+
+        //         if (chunk.thinking)
+        //             thinkingDiv.textContent += chunk.thinking;
+
+        //         if (chunk.content) {
+        //             contentText += chunk.content;
+        //             contentDiv.innerHTML = marked.parse(contentText);
+        //         }
+        //     }
+
+        //     chatBox.scrollTop = chatBox.scrollHeight;
+        // }
+        
     } catch (error) {
 
         aiMessage.textContent = "서버 연결 실패: " + error.message;
-
+        // input.focus();
+    } finally {
         isGenerating = false;
         input.disabled = false;
         sendButton.disabled = false;
         input.placeholder = "메시지를 입력해주세요...";
-        // input.focus();
+        input.focus();
     }
 }
 

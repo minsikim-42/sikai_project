@@ -41,48 +41,6 @@ def create_conversation(user_id: str):
     
     return info
 
-# def ensure_conversation(user_id: str, conversation_id):
-#     user_path = get_user_path(user_id)
-#     path = f"{user_path}/{conversation_id}"
-
-#     if os.path.exists(path):
-#         return
-
-#     os.mkdir(path)
-
-#     info = {
-#         "id": conversation_id,
-#         "title": f"Conversation {conversation_id}",
-#         "created_at": datetime.now().isoformat()
-#     }
-
-#     with open(f"{path}/info.json", "w", encoding="utf-8") as f:
-#         json.dump(info, f, ensure_ascii=False, indent=4)
-
-#     with open(f"{path}/messages.json", "w", encoding="utf-8") as f:
-#         json.dump([], f)
-
-# def add_message(user_id: str,conversation_id, role, content, thinking=""):
-#     user_path = get_user_path(user_id)
-#     path = f"{user_path}/{conversation_id}/messages.json"
-
-#     with open(path, "r", encoding="utf-8") as f:
-#         messages = json.load(f)
-
-#     messages.append({
-#         "role": role,
-#         "content": content,
-#         "thinking": thinking
-#     })
-
-#     with open(path, "w", encoding="utf-8") as f:
-#         json.dump(
-#             messages,
-#             f,
-#             ensure_ascii=False,
-#             indent=4
-#         )
-
 def ensure_conversation(user_id: str, conversation_id: int):
     path = get_user_path(user_id)
     conv_path = f"{path}/{conversation_id}"
