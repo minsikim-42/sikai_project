@@ -31,3 +31,9 @@ SERPER_API_KEY = ""
 `./run_win.bat`
 
 ollama serve (you need to install model like 'ollama run qwen3:8b' or if you want use downloaded model, using script.js fnc)
+
+### 6. view
+
+https://github.com/user-attachments/assets/1b18b8aa-758b-4de3-8bb1-fbc0f079bc06
+
+
