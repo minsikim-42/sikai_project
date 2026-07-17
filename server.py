@@ -14,6 +14,7 @@ from slowapi.util import get_remote_address
 
 from services import conversation
 import json
+import time
 
 from fastapi import Header
 from services import tool_manager, tool_planner
@@ -303,8 +304,37 @@ def get_conversation(
 
     return messages
 
+def event_stream(job_id: str):
+    last_thinking_len = 0
+    last_answer_len = 0
+
+    while True:
+        job = job_manager.get_job(job_id)
+
+        if not job:
+            yield f"data: {json.dumps({'thinking': '', 'content': '', 'finished': True, 'error': 'job not found'})}\n\n"
+            break
+
+        delta_thinking = job["thinking"][last_thinking_len:]
+        delta_content = job["answer"][last_answer_len:]
+        last_thinking_len = len(job["thinking"])
+        last_answer_len = len(job["answer"])
+
+        if delta_thinking or delta_content or job["finished"]:
+            yield f"data: {json.dumps({'thinking': delta_thinking, 'content': delta_content, 'finished': job['finished']})}\n\n"
+
+        if job["finished"]:
+            break
+
+        time.sleep(0.1)
+
+
 @app.get("/chat/stream/{job_id}")
-def get_job(job_id: str):
-    job = job_manager.get_job(job_id)
-    print(job)
-    return job
+def stream_job(job_id: str):
+    return StreamingResponse(event_stream(job_id), media_type="text/event-stream")
+
+
+@app.get("/chat/active/{conversation_id}")
+def get_active_job(conversation_id: int, x_user_id: str = Header("default_user")):
+    job_id = job_manager.get_active_job_id(x_user_id, conversation_id)
+    return {"job_id": job_id}

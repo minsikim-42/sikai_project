@@ -37,6 +37,46 @@ function addMessage(role, text) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// job_id를 SSE로 구독하면서 thinking/content를 실시간으로 채워주는 함수
+// (새로 보낸 메시지든, 새로고침 후 재연결이든 동일하게 사용)
+function watchJob(jobId, thinkingDiv, contentDiv) {
+    return new Promise((resolve, reject) => {
+        let thinkingText = "";
+        let contentText = "";
+
+        const es = new EventSource(`/chat/stream/${jobId}`);
+
+        es.onmessage = (e) => {
+            const chunk = JSON.parse(e.data);
+
+            if (chunk.error) {
+                es.close();
+                reject(new Error(chunk.error));
+                return;
+            }
+
+            thinkingText += chunk.thinking || "";
+            contentText += chunk.content || "";
+
+            thinkingDiv.textContent = thinkingText;
+            contentDiv.innerHTML = marked.parse(contentText);
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            if (chunk.finished) {
+                es.close();
+                resolve();
+            }
+        };
+
+        es.onerror = () => {
+            // 네트워크가 잠깐 끊겨도 EventSource가 자동 재연결을 시도하므로
+            // 여기서는 즉시 실패 처리하지 않음
+            console.warn("SSE 연결 오류, 브라우저가 자동 재연결을 시도합니다.");
+        };
+    });
+}
+
 // 유저 메시지 전송
 async function sendMessage() {
     if (isGenerating) return; // 생성 중이면 무시
@@ -93,57 +133,8 @@ async function sendMessage() {
         const data = await response.json();
         const jobId = data.job_id;
 
-        while (true) {
+        await watchJob(jobId, thinkingDiv, contentDiv);
 
-            const res = await fetch(`/chat/stream/${jobId}`);
-
-            const job = await res.json();
-
-            thinkingDiv.textContent = job.thinking;
-            contentDiv.innerHTML = marked.parse(job.answer);
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            if (job.finished)
-                break;
-
-            await new Promise(r => setTimeout(r, 200));
-        }
-        // const reader = response.body.getReader();
-        // const decoder = new TextDecoder();
-
-        // let buffer = "";
-        // let contentText = "";
-
-        // while (true) {
-
-        //     const { done, value } = await reader.read();
-
-        //     if (done) break;
-
-        //     buffer += decoder.decode(value, { stream: true });
-
-        //     const lines = buffer.split("\n");
-        //     buffer = lines.pop();
-
-        //     for (const line of lines) {
-
-        //         if (!line.trim()) continue;
-
-        //         const chunk = JSON.parse(line);
-
-        //         if (chunk.thinking)
-        //             thinkingDiv.textContent += chunk.thinking;
-
-        //         if (chunk.content) {
-        //             contentText += chunk.content;
-        //             contentDiv.innerHTML = marked.parse(contentText);
-        //         }
-        //     }
-
-        //     chatBox.scrollTop = chatBox.scrollHeight;
-        // }
-        
     } catch (error) {
 
         aiMessage.textContent = "서버 연결 실패: " + error.message;
@@ -228,8 +219,56 @@ async function loadChatHistory(conversation_id) {
 
         chatBox.scrollTop = chatBox.scrollHeight;
 
+        await checkActiveJob(conversation_id);
+
     } catch (error) {
         alert("대화 내역을 불러오는 중 오류 발생:", error);
+    }
+}
+
+// 새로고침/재접속 시, 이 대화에 진행 중인 job이 있으면 이어서 구독
+async function checkActiveJob(conversation_id) {
+    try {
+        const res = await fetch(`/chat/active/${conversation_id}`, {
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+
+        if (!data.job_id) return;
+
+        isGenerating = true;
+        input.disabled = true;
+        input.placeholder = "AI 답변중..";
+
+        const sendButton = document.getElementById("sendButton");
+        sendButton.disabled = true;
+
+        const aiMessage = document.createElement("div");
+        aiMessage.classList.add("message", "ai");
+
+        aiMessage.innerHTML = `
+        <details class="thinking-box">
+            <summary>🤔 Thinking</summary>
+            <pre class="thinking"></pre>
+        </details>
+
+        <div class="content"></div>
+        `;
+
+        chatBox.appendChild(aiMessage);
+
+        const thinkingDiv = aiMessage.querySelector(".thinking");
+        const contentDiv = aiMessage.querySelector(".content");
+
+        await watchJob(data.job_id, thinkingDiv, contentDiv);
+
+    } catch (error) {
+        console.error("진행 중인 작업 확인 실패:", error);
+    } finally {
+        isGenerating = false;
+        input.disabled = false;
+        document.getElementById("sendButton").disabled = false;
+        input.placeholder = "메시지를 입력해주세요...";
     }
 }
 
