@@ -34,7 +34,7 @@ def chat(messages: list, request: ChatRequest, callback=None):
                         "messages": messages,
                         "tools": tools,
                         "think": isThink,
-                        "stream": False,
+                        "stream": True,
                         "options": {
                             "num_ctx": 32768, # 32k
                             "num_predict": predict,
@@ -42,29 +42,46 @@ def chat(messages: list, request: ChatRequest, callback=None):
                             "top_p": 0.9,
                         }
                     },
-                    stream=False
+                    stream=True
                 )
-        
-        # print(json.dumps(messages, indent=2, ensure_ascii=False))
-                
-        # for line in response.iter_lines():
-        #     if not line:
-        #         continue
 
-        #     data = json.loads(line)
+        full_thinking = ""
+        full_content = ""
+        tool_calls = None
+        data = {}
 
-        #     message = data.get("message", {})
+        for line in response.iter_lines():
+            if not line:
+                continue
 
-        #     yield json.dumps({
-        #         "thinking": message.get("thinking", ""),
-        #         "content": message.get("content", "")
-        #     }) + "\n"
+            data = json.loads(line)
+            chunk_message = data.get("message", {})
 
-        data = response.json()
+            delta_thinking = chunk_message.get("thinking", "")
+            delta_content = chunk_message.get("content", "")
 
-        message = data["message"]
-        
-        tool_calls = message.get("tool_calls")
+            if chunk_message.get("tool_calls"):
+                tool_calls = chunk_message["tool_calls"]
+
+            full_thinking += delta_thinking
+            full_content += delta_content
+
+            # 툴콜 턴에서는 기존과 동일하게 실시간 전달을 하지 않음
+            if tool_calls is None:
+                if callback:
+                    callback(delta_thinking, delta_content)
+                else:
+                    yield json.dumps({
+                        "thinking": delta_thinking,
+                        "content": delta_content
+                    }) + "\n"
+
+            if data.get("done"):
+                break
+
+        message = {"role": "assistant", "content": full_content}
+        if tool_calls:
+            message["tool_calls"] = tool_calls
 
         if tool_calls: # 툴 콜을 요청했다면
             tool_call_count += 1
@@ -129,22 +146,9 @@ def chat(messages: list, request: ChatRequest, callback=None):
             continue
         
         print("===================data=======================")
-        print(data["done_reason"])
-        print(message.get("tool_calls"))
+        print(data.get("done_reason"))
         print(json.dumps(data, indent=2, ensure_ascii=False))
         print("====================end======================")
-
-        res_thinking = message.get("thinking","")
-        res_content = message.get("content","")
-        if callback:
-            print(type(res_thinking))
-            print(res_thinking)
-            callback(res_thinking, res_content)
-        else:
-            yield json.dumps({
-                "thinking": res_thinking,
-                "content": res_content
-            }) + "\n"
 
         prompt_tokens += data.get(
             "prompt_eval_count",
